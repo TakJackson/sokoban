@@ -34,9 +34,7 @@ def my_team():
     of triplet of the form (student_number, first_name, last_name)
     
     '''
-#    return [ (1234567, 'Ada', 'Lovelace'), (1234568, 'Grace', 'Hopper'), (1234569, 'Eva', 'Tardos') ]
-    raise NotImplementedError()
-
+    return [(10482822, 'Jackson', 'Sugars'), (1,' ', '' )]
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 
@@ -62,7 +60,55 @@ def taboo_cells(warehouse):
        and the boxes.  
     '''
     ##         "INSERT YOUR CODE HERE"    
-    raise NotImplementedError()
+    #find spaces (not including target/s)
+    spaces = []
+    for column in range(warehouse.ncols):
+        for row in range(warehouse.nrows):
+            if (column, row) not in (warehouse.walls + warehouse.targets):
+                spaces.append((column,row))
+    #find taboos
+    taboos = []
+    print(warehouse)
+    print(spaces)
+    while True:
+        for coord in spaces:
+            for xSeekCoord in ((coord[0]+1, coord[1]), (coord[0]-1, coord[1])):
+                #check if cell to left or right of space is a wall
+                if xSeekCoord in (warehouse.walls):
+                    for ySeekCoord in ((coord[0], coord[1]+1), (coord[0], coord[1]-1)):
+                        #check diagonal to determine a corner
+                        if ySeekCoord in (warehouse.walls):
+                            #check taboo cell is within the warehouse walls
+                            checks = [False, False, False, False]
+                            for wallcoord in warehouse.walls:      
+                                #check up
+                                if coord[0] == wallcoord[0]:
+                                    if wallcoord[1] < coord[1]:
+                                        checks[0] = True
+                                #check down
+                                if coord[0] == wallcoord[0]:
+                                    if wallcoord[1] > coord[1]:
+                                        checks[1] = True
+                                #check left
+                                if coord[1] == wallcoord[1]:
+                                    if wallcoord[0] < coord[0]:
+                                        checks[2] = True
+                                #check right
+                                if coord[1] == wallcoord[1]:
+                                    if wallcoord[0] > coord[0]:
+                                        checks[3] = True
+                            if sum(checks) == 4:
+                                taboos.append(coord)
+                                
+                                print("removed " + str(coord))
+                                continue
+                            else:
+                                print("check "+ str(coord) +" failed: "+ str(checks))
+        break
+                                                        
+    print(taboos)
+    return ("#")
+    # raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
