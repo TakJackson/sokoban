@@ -68,8 +68,6 @@ def taboo_cells(warehouse):
                 spaces.append((column,row))
     #find taboos
     taboos = []
-    print(warehouse)
-    print(spaces)
     while True:
         for coord in spaces:
             for xSeekCoord in ((coord[0]+1, coord[1]), (coord[0]-1, coord[1])):
@@ -99,15 +97,18 @@ def taboo_cells(warehouse):
                                         checks[3] = True
                             if sum(checks) == 4:
                                 taboos.append(coord)
-                                
-                                print("removed " + str(coord))
                                 continue
-                            else:
-                                print("check "+ str(coord) +" failed: "+ str(checks))
         break
                                                         
-    print(taboos)
-    return ("#")
+    #return string in form
+    X,Y = zip(*warehouse.walls)
+    x_size, y_size = 1+max(X), 1+max(Y)
+    vis = [[" "] * x_size for y in range(y_size)]
+    for (x,y) in warehouse.walls:
+        vis[y][x] = "#"
+    for (x,y) in taboos:
+        vis[y][x] = "X"
+    return "\n".join(["".join(line) for line in vis])
     # raise NotImplementedError()
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
