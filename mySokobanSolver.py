@@ -66,7 +66,7 @@ def taboo_cells(warehouse):
         for row in range(warehouse.nrows):
             if (column, row) not in (warehouse.walls + warehouse.targets):
                 spaces.append((column,row))
-    #find taboos
+    #find corner taboos
     taboos = []
     while True:
         for coord in spaces:
@@ -99,14 +99,68 @@ def taboo_cells(warehouse):
                                 taboos.append(coord)
                                 continue
         break
-                                                        
-    #return string in form
-    X,Y = zip(*warehouse.walls)
-    x_size, y_size = 1+max(X), 1+max(Y)
+    #check for taboo cells inbetween other taboo cells and parralel to a full wall
+    newtaboos = []
+    for taboo1 in taboos:
+        for taboo2 in taboos:
+            #check for taboo cells sharing the same x value
+            if taboo1[0] == taboo2[0]:
+                if taboo1[1] < taboo2[1]:
+                    print("checking cells between " + str(taboo1) + "and " + str(taboo2))
+                    #make list of points between
+                    line = []
+                    for ycoord in range(taboo1[1], taboo2[1]+1):
+                        line.append((taboo1[0], ycoord))
+                    #check for lack of target squares in line, and parralel walls
+                    leftWalls = 0
+                    rightWalls = 0
+                    targetInLine = False
+                    for cell in line:
+                        if cell in warehouse.targets:
+                            targetInLine = True
+                            break
+                        #check for parralel walls on either side
+                        if (cell[0]+1, cell[1]) in warehouse.walls:
+                            rightWalls += 1
+                        if (cell[0]-1, cell[1]) in warehouse.walls:
+                            leftWalls += 1
+                    #determine a full wall on either side
+                    if ((leftWalls > (taboo2[1] - taboo1[1])) or (rightWalls > (taboo2[1] - taboo1[1])) and targetInLine == False):
+                        newtaboos.extend(line)
+            #check for taboo cells sharing the same y value
+            if taboo1[1] == taboo2[1]:
+                if taboo1[0] < taboo2[0]:
+                    #make list of points between
+                    line = []
+                    for xcoord in range(taboo1[0], taboo2[0]+1):
+                        line.append((xcoord, taboo1[1]))
+                    #check for lack of target squares in line, and parralel walls
+                    upperWalls = 0
+                    lowerWalls = 0
+                    targetInLine = False
+                    for cell in line:
+                        if cell in warehouse.targets:
+                            targetInLine = True
+                            break
+                        #check for parralel walls on either side
+                        if (cell[0], cell[1]+1) in warehouse.walls:
+                            lowerWalls += 1
+                        if (cell[0], cell[1]-1) in warehouse.walls:
+                            upperWalls += 1
+                    #determine a full wall on either side
+                    if ((upperWalls > (taboo2[0] - taboo1[0])) or (lowerWalls > (taboo2[0] - taboo1[0])) and targetInLine == False):
+                        newtaboos.extend(line)
+    taboos.extend(newtaboos)
+
+
+
+    #return in string form
+    X, Y = zip(*warehouse.walls)
+    x_size, y_size = 1 + max(X), 1 + max(Y)
     vis = [[" "] * x_size for y in range(y_size)]
-    for (x,y) in warehouse.walls:
+    for (x, y) in warehouse.walls:
         vis[y][x] = "#"
-    for (x,y) in taboos:
+    for (x, y) in taboos:
         vis[y][x] = "X"
     return "\n".join(["".join(line) for line in vis])
     # raise NotImplementedError()
