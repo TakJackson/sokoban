@@ -59,13 +59,24 @@ def taboo_cells(warehouse):
        The returned string should NOT have marks for the worker, the targets,
        and the boxes.  
     '''
-    ##         "INSERT YOUR CODE HERE"    
-    #find spaces (not including target/s)
-    spaces = []
-    for column in range(warehouse.ncols):
-        for row in range(warehouse.nrows):
-            if (column, row) not in (warehouse.walls + warehouse.targets):
-                spaces.append((column,row))
+    ##         "INSERT YOUR CODE HERE" 
+    #--------------------------------------------------------------------------------------------
+    def find_spaces():   
+        '''
+        auxiliary function to find avaliable spaces (not including target/s) within a warehouse
+
+        @return
+            a list of the coordinates of spaces in a warehouse
+        '''
+        spaces = []
+        for column in range(warehouse.ncols):
+            for row in range(warehouse.nrows):
+                if (column, row) not in (warehouse.walls + warehouse.targets):
+                    spaces.append((column,row))
+        return spaces
+    #--------------------------------------------------------------------------------------------
+
+    spaces = find_spaces()
     #find corner taboos
     taboos = []
     while True:
@@ -76,7 +87,7 @@ def taboo_cells(warehouse):
                     for ySeekCoord in ((coord[0], coord[1]+1), (coord[0], coord[1]-1)):
                         #check diagonal to determine a corner
                         if ySeekCoord in (warehouse.walls):
-                            #check taboo cell is within the warehouse walls
+                            #check taboo cell is within the warehouse walls by checking up-down-left-right
                             checks = [False, False, False, False]
                             for wallcoord in warehouse.walls:      
                                 #check up
@@ -95,7 +106,7 @@ def taboo_cells(warehouse):
                                 if coord[1] == wallcoord[1]:
                                     if wallcoord[0] > coord[0]:
                                         checks[3] = True
-                            if sum(checks) == 4:
+                            if sum(checks) == len(checks):
                                 taboos.append(coord)
                                 continue
         break
@@ -151,8 +162,6 @@ def taboo_cells(warehouse):
                     if ((upperWalls > (taboo2[0] - taboo1[0])) or (lowerWalls > (taboo2[0] - taboo1[0])) and targetInLine == False):
                         newtaboos.extend(line)
     taboos.extend(newtaboos)
-
-
 
     #return in string form
     X, Y = zip(*warehouse.walls)
@@ -242,8 +251,37 @@ def check_elem_action_seq(warehouse, action_seq):
     
     ##         "INSERT YOUR CODE HERE"
     
-    raise NotImplementedError()
+    #raise NotImplementedError()
+    def move(coord, direction, distance):
+        '''
+        finds and returns the coordinates of an element if it were moved in
+        a given direction
 
+        @param coord: the current coordinates of an element ex. (3, 4)
+
+        @param direction
+
+        @return
+            the new coordinates of a moved element
+        '''
+        if direction == 'Up':
+            return (coord[0], coord[1] - distance)
+        if direction == 'Down':
+            return (coord[0], coord[1] + distance)
+        if direction == 'Left':
+            return (coord[0] - distance, coord[1])
+        if direction == 'Right':
+            return (coord[0] + distance, coord[1])
+
+    for action in action_seq:
+        if move(warehouse.worker, action, 1) in warehouse.walls:
+            return ('Impossible')
+        if move(warehouse.worker, action, 1) in warehouse.boxes:
+            if move(warehouse.worker, action, 2) in (warehouse.boxes + warehouse.walls):
+                return ('Impossible')
+        warehouse.worker = move(warehouse.worker, action, 1)
+    return warehouse.__str__()
+                
 
 # - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 

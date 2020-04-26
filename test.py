@@ -1,12 +1,23 @@
-num1 = 4
-num2 = 7
+def move(coord, direction, distance):
+    '''
+    finds and returns the coordinates of an element if it were moved in
+    a given direction
 
-if num1 < num2:
-    greaternum = num2
-    lessnum = num1
-else:
-    greaternum = num1
-    lessnum = num2
+    @param coord: the current coordinates of an element ex. (3, 4)
 
-for i  in range(lessnum, greaternum):
-    print("checked " + str(i))
+    @param direction
+
+    @return
+        the new coordinates of a moved element
+    '''
+    if direction == 'Up':
+        return (coord[0], coord[1] - distance)
+    if direction == 'Down':
+        print(coord)
+        return (coord[0], coord[1] + distance)
+    if direction == 'Left':
+        return (coord[0] - distance, coord[1])
+    if direction == 'right':
+        return (coord[0] + distance, coord[1])
+
+move((2,3), 'Up', 1)
